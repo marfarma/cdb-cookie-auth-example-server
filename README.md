@@ -46,13 +46,13 @@ Most known issues are limiations of the db per-user provising application.  I pl
 
 1. **Dockerfile pulls latest version of klaemo/couchdb container** -- As with the previous issue, it would be better to reference a specific version.
 
-1. **SSL not implemented** -- An SSL version of the upstream couchdb container exists (klaemo/couchdb-ssl).  It would be best to use that base container if the server is exposed to the internet.
+1. **SSL not implemented** -- An SSL version of the upstream couchdb container exists (klaemo/couchdb-ssl).  It would be best to use SSL if the server is exposed to the internet.
 
 1. **CORS not implemented** -- An existing fork of the provising application supports CORS (https://github.com/awaigand/couchdb-dbperuser-provisioning.git) however it also includes an unwanted change to the per user database naming convention.
 
-1. **Whitelisting not implemented** -- Couchbd supports limiting the config properties that can be access via http.  Given that the admin credentials are stored in plain text, whitelisting should be enabled to prevent accidential exposure.  
+1. **Whitelisting not implemented** -- Couchbd supports limiting the config properties that can be accessed via http.  Given admin credentials are stored in plain text, whitelisting should be enabled to prevent accidential exposure.  
 
-1. **Admin credentials as config setting** -- It would be ideal if the credentials were provided to the application via environment variables instead of via config setting.
+1. **Admin credentials as config setting** -- It would be ideal if the credentials were provided to the application via environment variables instead of the config file.
 
 ## License
 
