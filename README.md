@@ -10,31 +10,38 @@ This repository provides an example setup.  To use, fork and update the config f
 
     docker build -t your_username/your_container_name .
 
-Run the example container with couchdb server on port 80 of the docker host:
+Run the example container with couchdb server on port 80:
 
     docker run -d --restart=always -p 80:5984 –name couchdb marfarma/per-user-couchdb
   
 or, for port 5984:
    
     docker run -d --restart=always -p 5984:5984 –name couchdb marfarma/per-user-couchdb
-  
-If you're developing using boot2docker, to access the server from the pc, create a tunnel.  For example (depending on exposed port):
+
+To use your current directory as the CouchDB Database directory (the log file directory can also be mounted.)
+
+
+    docker run -d --restart=always -p 5984:5984 -v $(pwd):/usr/local/var/lib/couchdb –name couchdb marfarma/per-user-couchdb
+
+## Provision a new user and database
+
+Make a GET or PUT request to the proxy address on your couchdb server. For example if `_myapp_provision` is the value assigned to the proxy configuration and the username is farnando with password apple, then the provisioning URL would be:
+
+    http://localhost:5984/_myapp_provision?username=fernando&password=apple
+
+## boot2docker
+
+If you're using boot2docker, to access couchdb from your pc, create an ssh tunnel.  For example (depending on exposed port):
 
     boot2docker ssh -L 80:localhost:80
  
     boot2docker ssh -L 5984:localhost:5984
 
-## Provision a new user and database
-
-Make a GET or PUT request to the proxy address on your couchdb server. For example if `_myapp_provision` is the value assigned to the proxy configuration, then the provisioning request would go to:
-
-    http://localhost:5984/_myapp_provision?username=fernando&password=apple
-
 ## Known Issues
 
 Most known issues are limiations of the db per-user provising application.  I plan to submit corresponding pull requests to the upline project as they are fixed.
 
-1. **Pre-existing users not supported** -- an attempt to provision a database for a pre-existing server produces the following error: `{"error":"conflict","reason":"Document update conflict.","info":"create user"}`
+1. **Pre-existing users not supported** -- an attempt to provision a database for a pre-existing user produces the following error: `{"error":"conflict","reason":"Document update conflict.","info":"create user"}`
 
 1. **User credentials in query string** -- using the query string to pass user credentials is a poor security practice.  Especially so in this example implementation that is not configured for SSL access.  It would be better if the credentials were submitted as part of the post body instead.
 
