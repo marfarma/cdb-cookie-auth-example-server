@@ -2,7 +2,7 @@
 
 Available in the docker index as marfarma/per-user-couchdb
 
-A CouchDB Docker container pre-configured with a nodejs `os daemon` to create a single-user database and server user account from a single proxy request.  It uses the node application, [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning), and is based on klaemo/couchdb.
+A CouchDB Docker container pre-configured with a nodejs `os daemon` application that creates a single-user database and server user account from a single proxy request.  It uses the node application, [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning), and is based on klaemo/couchdb.
 
 ## Usage
 
@@ -24,14 +24,15 @@ If you're developing using boot2docker, to access the server from the pc, create
  
     boot2docker ssh -L 5984:localhost:5984
 
-Provision a new user and database as follows - GET or PUT to the following address (_myapp_provision is the user configurable proxy location of the db per-user provising application.  Substitute your own value assigned in the local.ini config file.):
+## Provision a new user and database
+
+Make a GET or PUT request to the proxy address on your couchdb server. For example if `_myapp_provision` is the value assigned to the proxy configuration, then the provisioning request would go to:
 
     http://localhost:5984/_myapp_provision?username=fernando&password=apple
 
-
 ## Known Issues
 
-Most known issues are limiations of the db per-user provising application.  I plan to submit corresponding pull requests to the upline project as I address those issues.
+Most known issues are limiations of the db per-user provising application.  I plan to submit corresponding pull requests to the upline project as they are fixed.
 
 1. **Pre-existing users not supported** -- an attempt to provision a database for a pre-existing server produces the following error: `{"error":"conflict","reason":"Document update conflict.","info":"create user"}`
 
