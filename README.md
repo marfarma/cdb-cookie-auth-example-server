@@ -1,28 +1,28 @@
-## couchdb-per-user
+## per-user-couchdb
 
-Available in the docker index as marfarma/couchdb-per-user
+Available in the docker index as marfarma/per-user-couchdb
 
-A CouchDB Docker container pre-configured with a nodejs `os daemon` which provisions a single-user database and server user account from a single proxy request.  The container combines the node application, [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning) with the klaemo/couchdb container.
+A CouchDB Docker container pre-configured with a nodejs `os daemon` to create a single-user database and server user account from a single proxy request.  It uses the node application, [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning), and is based on klaemo/couchdb.
 
 ## Usage
 
-This repository provides an example setup.  To use, fork this repo and uppdate local.ini with your desired values, see [project documentation](https://github.com/pegli/couchdb-dbperuser-provisioning) and build a new container.
+This repository provides an example setup.  To use, fork and update the config file local.ini with your desired values, (see [project documentation](https://github.com/pegli/couchdb-dbperuser-provisioning) for details) and then build a new container.
 
-    docker build -t your_username/per-user-couchdb .
+    docker build -t your_username/your_container_name .
 
-Run the example container with following command to expose couchdb server on port 80 of docker host:
+Run the example container with couchdb server on port 80 of the docker host:
 
-    docker run -d --restart=always -p 80:5984 –name couchdb marfarma/couchdb-per-user
+    docker run -d --restart=always -p 80:5984 –name couchdb marfarma/per-user-couchdb
   
-or, to exposed it on port 5984, use the following:
+or, for port 5984:
    
-    docker run -d --restart=always -p 5984:5984 –name couchdb marfarma/couchdb-per-user
+    docker run -d --restart=always -p 5984:5984 –name couchdb marfarma/per-user-couchdb
   
 If you're developing using boot2docker, to access the server from the pc, create a tunnel.  For example (depending on exposed port):
 
     boot2docker ssh -L 80:localhost:80
  
-    boot2docker ssh -L 80:localhost:80
+    boot2docker ssh -L 5984:localhost:5984
 
 Provision a new user and database as follows - GET or PUT to the following address (_myapp_provision is the user configurable proxy location of the db per-user provising application.  Substitute your own value assigned in the local.ini config file.):
 
@@ -31,7 +31,7 @@ Provision a new user and database as follows - GET or PUT to the following addre
 
 ## Known Issues
 
-The most of the following known issues are limiations of the db per-user provising application.  I plan to address them and submit corresponding pull requests to the upline project.
+Most known issues are limiations of the db per-user provising application.  I plan to submit corresponding pull requests to the upline project as I address those issues.
 
 1. **Pre-existing users not supported** -- an attempt to provision a database for a pre-existing server produces the following error: `{"error":"conflict","reason":"Document update conflict.","info":"create user"}`
 
