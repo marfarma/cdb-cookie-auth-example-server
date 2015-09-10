@@ -24,7 +24,7 @@ RUN apt-get install --yes nodejs
 
 # add OS daemon
 RUN apt-get install -y git
-RUN git clone https://github.com/pegli/couchdb-dbperuser-provisioning.git /usr/bin/couchdb-provision
+RUN git clone https://github.com/marfarma/couchdb-dbperuser-provisioning.git /usr/bin/couchdb-provision
 RUN cd /usr/bin/couchdb-provision && npm install && chmod +x ./lib/provision.js
 RUN chown  -R couchdb:couchdb /usr/bin/couchdb-provision
 
