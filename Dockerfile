@@ -13,7 +13,7 @@
 # the License.
 #
 
-FROM klaemo/couchdb
+FROM klaemo/couchdb-ssl
 
 MAINTAINER Pauli Price pauli.price@gmail.com
 
@@ -24,9 +24,18 @@ RUN apt-get install --yes nodejs
 
 # add OS daemon
 RUN apt-get install -y git
-RUN git clone https://github.com/marfarma/couchdb-dbperuser-provisioning.git /usr/bin/couchdb-provision
-RUN cd /usr/bin/couchdb-provision && npm install && chmod +x ./lib/provision.js
-RUN chown  -R couchdb:couchdb /usr/bin/couchdb-provision
+
+RUN mkdir /usr/bin/auth-daemon && cd /usr/bin/auth-daemon
+RUN git init
+RUN git remote add origin git@github.com:marfarma/couchdb-cookie-auth.git
+RUN git config core.sparsecheckout true
+RUN echo example/node-server/api >> .git/info/sparse-checkout
+RUN git pull origin master
+RUN mv example/node-server/api/**/* .
+RUN rm -rf example
+RUN npm install
+RUN chmod +x ./api.js
+RUN chown  -R couchdb:couchdb /usr/bin/auth-daemon
 
 # add couchdb server config
 ADD local.ini /usr/local/etc/couchdb/local.ini

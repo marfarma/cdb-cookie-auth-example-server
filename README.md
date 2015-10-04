@@ -1,8 +1,26 @@
-# cdb-cookie-auth-example-server
+# A CouchD
 
-Available in the docker index as marfarma/per-user-couchdb
+Available in the docker index as marfarma/per-user-remote-auth
 
-A CouchDB Docker container pre-configured with a nodejs `os daemon` application that creates a single-user database and server user account from a single proxy request.  It uses the node application, [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning), and is based on klaemo/couchdb.
+A Docker container pre-configured with a CouchDB server and a nodejs `os daemon` app that supports passwordless registration (creating a new user and associated single-user database) and authentication.  It returns both a JWT and an AuthSession cookie, allowing the user to interact directly with the CouchDB server as a logged-in user.
+
+The CouchDB server is configured for secure (https) access, using a self-signed certificate by default.  See [the klaemo/docker-couchdb-ssl documentation](https://github.com/klaemo/docker-couchdb-ssl) details on using your own certificate for production use.
+
+A [Terraform](https://www.terraform.io) script is provided to automatically provision a pre-configured droplet from DigitalOcean.  See the README in the terraform directory for details.
+
+## Current Status
+
+This is currently pre-alpha status, and is not ready for serious use.
+
+## TODO
+
+- [ ] Get new server up in order to enable on-device testing
+- [ ] Add minimal support for enable os-daemon status to api.js
+- [ ] Test couchdb-cookie-auth against an SSL endpoint
+- [ ] Add git sparse checkout instructions to example README
+- [ ] Integrate the setup CORS npm module as a library for the example server
+- [ ] Add comment about the relationship to the couchdb-cookie-auth example app
+
 
 ## Usage
 
@@ -10,18 +28,21 @@ This repository provides an example setup.  To use, fork and update the config f
 
     docker build -t your_username/your_container_name .
 
-Run the example container with couchdb server on port 80:
+Run the example container with couchdb server on port 443:
 
-    docker run -d --restart=always -p 80:5984 –name couchdb marfarma/per-user-couchdb
-  
-or, for port 5984:
-   
-    docker run -d --restart=always -p 5984:5984 –name couchdb marfarma/per-user-couchdb
+    docker run -d --restart=always -p 443:6984 –name couchdb marfarma/cdb-cookie-auth-example
+
+or, for port 6984:
+
+    docker run -d --restart=always -p 6984:6984 –name couchdb marfarma/cdb-cookie-auth-example
 
 To use your current directory as the CouchDB Database directory (the log file directory can also be mounted.)
 
 
     docker run -d --restart=always -p 5984:5984 -v $(pwd):/usr/local/var/lib/couchdb –name couchdb marfarma/per-user-couchdb
+
+[](COMMENT: pass environment variables into docker like this: `--env-file ./env.list` expects each line to be in the VAR=VAL format or, if you don't want to have the value on the command-line where it will be displayed by ps, etc., -e can pull in the value from the current environment if you just give it without the `sudo PASSWORD='foo' docker run  [...] -e PASSWORD [...]`)
+
 
 ## Provision a new user and database
 
@@ -34,32 +55,16 @@ Make a GET or PUT request to the proxy address on your couchdb server. For examp
 If you're using boot2docker, to access couchdb from your pc, create an ssh tunnel.  For example (depending on exposed port):
 
     boot2docker ssh -L 80:localhost:80
- 
+
     boot2docker ssh -L 5984:localhost:5984
 
-## Known Issues
+## Credits
 
-Most known issues are limiations of the db per-user provising application.  I plan to submit corresponding pull requests to the upline project as they are fixed.
+This project makes use of, or was inspired by, the following open source projects projects.
 
-1. **Pre-existing users not supported** -- an attempt to provision a database for a pre-existing user produces the following error: `{"error":"conflict","reason":"Document update conflict.","info":"create user"}`
-
-1. **User credentials in query string** -- using the query string to pass user credentials is a poor security practice.  Especially so in this example implementation that is not configured for SSL access.  It would be better if the credentials were submitted as part of the post body instead.
-
-1. **Users provisioned with GET requests** -- Get requests to the proxy location of the os daemon should return an error.
-
-1. **No support for multiple applications** -- It is not possible to support more than one application specific database per user.
-
-1. **Dockerfile pulls latest version of the provising application** -- Changes in the upline project could potentially break this implementation.  It would be better to reference a specific revision in the Dockerfile.
-
-1. **Dockerfile pulls latest version of klaemo/couchdb container** -- As with the previous issue, it would be better to reference a specific version.
-
-1. **SSL not implemented** -- An SSL version of the upstream couchdb container exists (klaemo/couchdb-ssl).  It would be best to use SSL if the server is exposed to the internet.
-
-1. **simplistic CORS support** -- An option to support CORS exists, however it can only be enabled or disabled.  There is no support for configuring specific headers.
-
-1. **Whitelisting not implemented** -- Couchbd supports limiting the config properties that can be accessed via http.  Given admin credentials are stored in plain text, whitelisting should be enabled to prevent accidential exposure.  
-
-1. **Admin credentials as config setting** -- It would be ideal if the credentials were provided to the application via environment variables instead of the config file.
+1. [couchdb-dbperuser-provisioning](https://github.com/pegli/couchdb-dbperuser-provisioning)
+1. [klaemo/docker-couchdb-ssl](https://github.com/klaemo/docker-couchdb-ssl)
+1. [add-cors-to-couchdb](https://github.com/pouchdb/add-cors-to-couchdb)
 
 ## License
 

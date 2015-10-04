@@ -1,0 +1,41 @@
+#cloud-config
+
+write_files:
+  - path: /etc/systemd/system/docker.service.d/increase-ulimit.conf
+    owner: core:core
+    permissions: 0644
+    content: |
+      [Service]
+      LimitMEMLOCK=infinity
+  - path: /etc/systemd/system/fleet.socket.d/30-ListenStream.conf
+    owner: core:core
+    permissions: 0644
+    content: |
+      [Socket]
+      ListenStream=127.0.0.1:49153
+  - path: /opt/couchbase/var/.README
+    owner: core:core
+    permissions: 0644
+    content: |
+      Couchbase /opt/couchbase/var data volume in container mounted here
+  - path: /var/lib/cbfs/data/.README
+    owner: core:core
+    permissions: 0644
+    content: |
+      CBFS files are stored here
+coreos:
+	etcd:
+	  # Get a new discovery URL from https://discovery.etcd.io/new
+	  discovery: https://discovery.etcd.io/8526885aa15cfee13e109a95a0decdd4
+	  addr: $private_ipv4:4001
+	  peer-addr: $private_ipv4:7001
+	fleet:
+	  public-ip: $private_ipv4   # used for fleetctl ssh command
+	units:
+	  - name: etcd.service
+	    command: start
+	  - name: fleet.service
+	    command: start
+		- name: docker.service
+			command: restart
+BAR
