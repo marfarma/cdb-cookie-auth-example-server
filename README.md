@@ -20,6 +20,46 @@ This is currently pre-alpha status, and is not ready for serious use.
 - [ ] Add git sparse checkout instructions to example README
 - [ ] Integrate the setup CORS npm module as a library for the example server
 - [ ] Add comment about the relationship to the couchdb-cookie-auth example app
+- [ ] Decide on method and implement env variables, ensure config file is optional
+- [ ] Add tests and setup on travis, etc.
+
+## Configuration
+
+Config settings for local.ini
+
+
+    [admins]
+    admin = admin
+
+    ; namespace:        can be used to distinguish between different apps, only useful if
+    ;                   add_namespace_to_dbname is true
+    ; user_name_format: plain or encoded.  Encoded user names are [describe technique]
+    ;                  [give sample]
+    [remote_auth_config]
+    namespace = com_taciko_todo
+    add_namespace_to_dbname = true
+    db_name_format = ns_user
+    user_name_format = encoded
+    port = 8100
+
+    [os_daemons]
+    todo_daemon = /usr/bin/node /usr/bin/auth-daemon/api.js remote_auth_config
+
+    [httpd_global_handlers]
+    _todo_proxy = {couch_httpd_proxy, handle_proxy_req, <<"http://127.0.0.1:8100">>}
+
+
+
+
+    ; Configuration for a vhost
+    ;[remote_auth_config:example.com]
+    ; credentials = false
+    ; List of origins separated by a comma
+    ;origins =
+    ; List of accepted headers separated by a comma
+    ; headers =
+    ; List of accepted methods
+    ; methods =
 
 
 ## Usage
