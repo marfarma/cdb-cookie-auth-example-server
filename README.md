@@ -70,11 +70,11 @@ This repository provides an example setup.  To use, fork and update the config f
 
 Run the example container with couchdb server on port 443:
 
-    docker run -d --restart=always -p 443:6984 –name couchdb marfarma/cdb-cookie-auth-example
+    docker run -d --restart=always -p 443:6984 marfarma/per-user-remote-auth
 
 or, for port 6984:
 
-    docker run -d --restart=always -p 6984:6984 –name couchdb marfarma/cdb-cookie-auth-example
+    docker run -d --restart=always -p 6984:6984 marfarma/per-user-remote-auth
 
 To use your current directory as the CouchDB Database directory (the log file directory can also be mounted.)
 

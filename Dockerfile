@@ -13,29 +13,26 @@
 # the License.
 #
 
-FROM klaemo/couchdb-ssl
+FROM marfarma/couchdb-ssl-node
 
 MAINTAINER Pauli Price pauli.price@gmail.com
 
-# install node
-RUN apt-get install -y curl
-RUN curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -
-RUN apt-get install --yes nodejs
-
 # add OS daemon
-RUN apt-get install -y git
-RUN mkdir /usr/bin/auth-daemon && cd /usr/bin/auth-daemon
-RUN git init
-RUN git remote add origin https://github.com/marfarma/couchdb-cookie-auth.git
-RUN git config core.sparsecheckout true
-RUN echo example/node-server/api >> .git/info/sparse-checkout
-RUN git pull origin master
-RUN mv example/node-server/api/* .
-RUN rm -rf example
-RUN npm install
-RUN chmod +x ./api.js
-RUN chown  -R couchdb:couchdb /usr/bin/auth-daemon
+RUN  apt-get install -y git
+RUN  mkdir /usr/bin/auth-daemon
+WORKDIR /usr/bin/auth-daemon
+RUN  git init && git remote add origin https://github.com/marfarma/couchdb-cookie-auth.git && \
+     git config core.sparsecheckout true && \
+     echo example/node-server/api >> .git/info/sparse-checkout
+RUN  git pull origin master && cd example &&  \
+     git checkout
+RUN  mv example/node-server/api/* /usr/bin/auth-daemon && \
+     rm -rf example && npm install && chmod +x ./api.js
 
+# add node app server config
+ADD config.js /usr/bin/auth-daemon/services/config.js
 
 # add couchdb server config
 ADD local.ini /usr/local/etc/couchdb/local.ini
+
+RUN  chown -R couchdb:couchdb /usr/bin/auth-daemon
